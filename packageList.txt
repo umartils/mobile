@@ -1,0 +1,6 @@
+get_cli
+flutter_easyloading
+sp_util
+
+add firebase
+firebase_core

@@ -1,23 +1,12 @@
 import 'package:get/get.dart';
+import 'package:puu1/app/routes/app_pages.dart';
 
 class HomeController extends GetxController {
-  //TODO: Implement HomeController
-
-  final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
+  void onTapLogin() {
+    Get.toNamed(Routes.LOGIN);
   }
 
-  @override
-  void onReady() {
-    super.onReady();
+  void onTapRegister() {
+    Get.toNamed(Routes.REGISTER);
   }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
 }

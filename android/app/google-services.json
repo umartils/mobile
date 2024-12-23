@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "101551552206",
+    "project_id": "puumobile-7d5b1",
+    "storage_bucket": "puumobile-7d5b1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101551552206:android:98adb3773fb944bdea029f",
+        "android_client_info": {
+          "package_name": "com.example.puu1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOLKqM0SUjibFeCWbW54UQ5oM3t4NTcwo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

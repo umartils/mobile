@@ -74,7 +74,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.ABSEN,
-      page: () => const AbsenView(),
+      page: () => AbsenView(),
       binding: AbsenBinding(),
     ),
     GetPage(
@@ -99,7 +99,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.HISTORY,
-      page: () => HistoryView(),
+      page: () => const HistoryView(),
       binding: HistoryBinding(),
     ),
     GetPage(

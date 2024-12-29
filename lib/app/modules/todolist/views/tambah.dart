@@ -112,6 +112,7 @@ class _TambahViewState extends State<TambahView> {
                         if (pickedDate != null) {
                           setState(() {
                             controller.selectedDate = pickedDate;
+                            controller.updateSelectedDate(pickedDate);
                           });
                         }
                       },

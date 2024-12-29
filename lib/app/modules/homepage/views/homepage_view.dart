@@ -1,13 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:puu1/app/modules/homepage/views/section1.dart';
 import 'package:puu1/app/modules/homepage/views/section2.dart';
-import 'package:puu1/app/modules/todolist/views/tambah.dart';
 import 'package:puu1/app/routes/app_pages.dart';
 import 'package:puu1/global.dart';
 import 'package:sp_util/sp_util.dart';
@@ -23,6 +20,7 @@ class HomepageView extends StatefulWidget {
 
 class _HomepageViewState extends State<HomepageView> {
   final HomepageController controller = Get.put(HomepageController());
+
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
@@ -33,7 +31,7 @@ class _HomepageViewState extends State<HomepageView> {
         title: Container(
           padding: const EdgeInsets.only(
             left: 3,
-            top: 18,
+            top: 10,
           ),
           child: Obx(
             () => Column(
@@ -61,7 +59,7 @@ class _HomepageViewState extends State<HomepageView> {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(top: 12, right: 20),
+            padding: const EdgeInsets.only(top: 7, right: 20),
             child: Obx(() {
               if (controller.imageUrl.value.isNotEmpty) {
                 return GestureDetector(
@@ -100,90 +98,111 @@ class _HomepageViewState extends State<HomepageView> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(
-              height: 34,
-            ),
-            Center(
-              child: InkWell(
-                onTap: () => Get.toNamed(Routes.TAMBAH_TASK),
-                child: Container(
-                  width: 320,
-                  height: 140,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(20)),
-                    image: const DecorationImage(
-                        image: AssetImage("asset/images/image.png"),
-                        fit: BoxFit.cover),
-                    boxShadow: [
-                      BoxShadow(
-                        offset: const Offset(0, 2),
-                        color: Colors.black.withOpacity(0.2),
-                        spreadRadius: 2,
-                        blurRadius: 10,
-                      )
+      body: SmartRefresher(
+        controller: controller.refreshingController,
+        onRefresh: controller.onRefresh,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 34,
+              ),
+              Center(
+                  child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 320,
+                    height: 140,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      image: const DecorationImage(
+                          image: AssetImage("asset/images/image.png"),
+                          fit: BoxFit.cover),
+                      boxShadow: [
+                        BoxShadow(
+                          offset: const Offset(0, 2),
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 2,
+                          blurRadius: 10,
+                        )
+                      ],
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () => Get.toNamed(Routes.TAMBAH_TASK),
+                    child: Container(
+                      width: 160,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10.0, vertical: 5.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                            color: primary, width: 2.0), // Tambahkan border
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10)),
+                        boxShadow: [
+                          BoxShadow(
+                            offset: const Offset(0, 4),
+                            color: Colors.black.withOpacity(0.3),
+                            spreadRadius: 1,
+                            blurRadius: 6,
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Buat Daftar Tugasmu",
+                          style: GoogleFonts.sora(
+                            color: primary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                ],
+              )
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0), // Jarak ke kiri
+                child: Text(
+                  "Untuk Anda",
+                  style: GoogleFonts.sora(
+                    color: secondchoice,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.only(right: 20.0, left: 13.0, bottom: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      SectionSatu(),
+                      SizedBox(
+                        height: 25,
+                      ),
+                      SectionDua()
                     ],
                   ),
-                  // child: Container(
-                  //   width: 50,
-                  //   height: 30,
-                  //   child: ElevatedButton(
-                  //     style: ElevatedButton.styleFrom(
-                  //       backgroundColor: primary,
-                  //       minimumSize:
-                  //           const Size(50, 30), // Sesuaikan ukuran minimum
-                  //       shape: RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(
-                  //             20), // Sesuaikan dengan border container
-                  //       ),
-                  //     ),
-                  //     onPressed: () => TambahView(),
-                  //     child: Text(
-                  //       "Buat Daftar Tugasmu",
-                  //       style: GoogleFonts.sora(color: Colors.white),
-                  //     ),
-                  //   ),
-                  // ),
                 ),
-              ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0), // Jarak ke kiri
-              child: Text(
-                "Untuk Anda",
-                style: GoogleFonts.sora(
-                  color: secondchoice,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.only(right: 20.0, left: 13.0, bottom: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    SectionSatu(),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    SectionDua()
-                  ],
-                ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

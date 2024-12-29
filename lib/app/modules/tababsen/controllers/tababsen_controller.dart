@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -40,15 +39,10 @@ class TababsenController extends GetxController {
     await compareLokasi();
     super.onInit();
   }
-
-  /// Membuka kamera untuk mengambil gambar absensi.
-  ///
-  /// Jika pengguna memilih gambar, maka akan disimpan dalam [imageFile]
-  /// dan [imagePath] akan diisi dengan path gambar. Jika pengguna tidak
-
-  ///
-  /// Jika terjadi kesalahan saat mengambil gambar, maka akan menampilkan
-  /// snackbar error dengan pesan kesalahan.
+// @override
+//   // void dispose() {
+//   //   super.dispose();
+//   // }
   Future<void> imgPick() async {
     try {
       final pickedFile = await ImagePicker().pickImage(
@@ -225,35 +219,31 @@ class TababsenController extends GetxController {
       );
 
       if (waktuMasukDateTime.isBefore(sekarang)) {
-        print(
-            'Waktu masuk (${waktuMasukDateTime}) lebih awal dari waktu sekarang (${sekarang}).');
         telat.value = true;
       } else if (waktuMasukDateTime.isAfter(sekarang)) {
-        print(
-            'Waktu masuk (${waktuMasukDateTime}) lebih lambat dari waktu sekarang (${sekarang}).');
         telat.value = false;
       } else {
-        print('Waktu masuk sama dengan waktu sekarang.');
         telat.value = false;
       }
     } catch (e) {
-      print('Nilai waktuMasuk: ${waktuMasuk.value}');
       print('Error saat membandingkan waktu: $e');
     }
   }
 
   Future<void> compareLokasi() async {
-    double latUser = double.parse(userLatitude.value!);
-    double longUser = double.parse(userLongitude.value!);
-    const double toleransi = 0.0015; // Toleransi dalam derajat
+    if (userLatitude.isNotEmpty) {
+      double latUser = double.parse(userLatitude.value);
+      double longUser = double.parse(userLongitude.value);
+      const double toleransi = 0.0015; // Toleransi dalam derajat
 
-    if ((latUser - latitude.value).abs() <= toleransi &&
-        (longUser - longitude.value).abs() <= toleransi) {
-      cekLokasi.value = true;
-      print('Lokasi user sama dengan lokasi absensi (dengan toleransi).');
-    } else {
-      cekLokasi.value = false;
-      print('Lokasi user berbeda dengan lokasi absensi.');
+      if ((latUser - latitude.value).abs() <= toleransi &&
+          (longUser - longitude.value).abs() <= toleransi) {
+        cekLokasi.value = true;
+        print('Lokasi user sama dengan lokasi absensi (dengan toleransi).');
+      } else {
+        cekLokasi.value = false;
+        print('Lokasi user berbeda dengan lokasi absensi.');
+      }
     }
   }
 

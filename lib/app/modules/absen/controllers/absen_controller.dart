@@ -1,12 +1,18 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:puu1/app/data/absen_provider.dart';
+// import 'package:puu1/app/data/absen_provider.dart';
+// import 'package:puu1/app/modules/tababsen/controllers/tababsen_controller.dart';
 
 class AbsenController extends GetxController {
   @override
   void onInit() async {
     await getLokasi();
     super.onInit();
+  }
+  var tabIndex = 0.obs;
+
+  void changeTabIndex(int index) {
+    tabIndex.value = index;
   }
 
   Future<Position> getLokasi() async {

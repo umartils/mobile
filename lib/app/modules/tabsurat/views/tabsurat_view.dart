@@ -19,6 +19,12 @@ class _TabsuratViewState extends State<TabsuratView> {
   String selectedStatus = ''; // Menyimpan status yang dipilih
 
   @override
+  void dispose() {
+    // Mengatur ulang imagePath saat halaman ditutup
+    controller.imagePath = ''.obs;
+    super.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(

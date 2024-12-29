@@ -40,18 +40,8 @@ class UserProvider extends GetConnect {
         headers: authHeader); // API diakses berdasarkan ID
   }
 
-  Future<Response> getTask() {
-    return get('${url}/api/get/task/${SpUtil.getInt("id")}',
-        headers: authHeader); // API diakses berdasarkan ID
-  }
-
-  Future<Response> addTask(var data) {
-    return post('${url}/api/task/add', data,
-        headers: myHeader); // API diakses tanpa ID
-  }
-
-  Future<Response> deleteTask(int id) {
-    return delete('${url}/api/task/delete/${id}',
-        headers: authHeader); // API diakses tanpa ID
+  Future<Response> changePassword(var data) {
+    return put('${url}/api/users/changepass/${SpUtil.getInt("id")}', data,
+        headers: authHeader); 
   }
 }

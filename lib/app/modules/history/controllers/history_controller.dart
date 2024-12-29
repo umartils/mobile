@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:puu1/app/data/absen_provider.dart';
 
 class HistoryController extends GetxController {
   RxList listData = <dynamic>[].obs;
   RxString imagePath = ''.obs;
+  RxList searchData = <dynamic>[].obs;
 
   Color getStatusColor(String status) {
     switch (status) {
@@ -21,9 +23,19 @@ class HistoryController extends GetxController {
     }
   }
 
+  RefreshController refreshController =
+      RefreshController(initialRefresh: false);
+
+  void onRefresh() async {
+    await getAbsen();
+    // if failed,use refreshFailed()
+    refreshController.refreshCompleted();
+  }
+
   @override
-  void onInit() {
-    getAbsen();
+  void onInit() async {
+    await getAbsen();
+    searchData.value = listData;
     super.onInit();
   }
 
@@ -31,8 +43,9 @@ class HistoryController extends GetxController {
     try {
       var response = await AbsenProvider().getData();
       var responseBody = response.body;
-      var data = responseBody['data'];
 
+      if (responseBody != null && responseBody['data'] != null) {
+        var data = responseBody['data'];
       listData.value = data.map((element) {
         return {
           'id': element['id'],
@@ -41,15 +54,20 @@ class HistoryController extends GetxController {
           'status': element['status'],
         };
       }).toList();
+        print("Data berhasil dimuat: $listData");
+      } else {
+        throw Exception("Data tidak ditemukan dalam respons.");
+      }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal memuat data absensi: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      // Get.snackbar(
+      //   'Error',
+      //   'Gagal memuat data absensi: $e',
+      //   backgroundColor: Colors.red,
+      //   colorText: Colors.white,
+      // );
     }
   }
+
 
   // Fungsi ini bisa dipanggil setelah submit absen
   void addAbsen(Map<String, dynamic> absen) {
@@ -67,23 +85,37 @@ class HistoryController extends GetxController {
         print(responseBody);
       } else {
         imagePath.value = ''; // Kosongkan jika tidak ada data
-        Get.snackbar(
-          'Error',
-          'Gambar tidak ditemukan untuk ID $id.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        // Get.snackbar(
+        //   'Error',
+        //   'Gambar tidak ditemukan untuk ID $id.',
+        //   snackPosition: SnackPosition.BOTTOM,
+        //   backgroundColor: Colors.red,
+        //   colorText: Colors.white,
+        // );
       }
     } catch (e) {
       imagePath.value = ''; // Pastikan tidak menampilkan data lama
-      Get.snackbar(
-        'Error',
-        'Gagal memuat gambar: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      // Get.snackbar(
+      //   'Error',
+      //   'Gagal memuat gambar: $e',
+      //   snackPosition: SnackPosition.BOTTOM,
+      //   backgroundColor: Colors.red,
+      //   colorText: Colors.white,
+      // );
     }
+  }
+
+  void runFilter(String keyword) {
+    RxList results = <dynamic>[].obs;
+    if (keyword.isEmpty) {
+      results.value = listData;
+    } else {
+      results.value = listData.where((element) {
+        return element['tanggal'].toString().contains(keyword.toLowerCase()) ||
+            element['waktu'].toString().contains(keyword.toLowerCase()) ||
+            element['status'].toString().contains(keyword.toLowerCase());
+      }).toList();
+    }
+    searchData.value = results;
   }
 }

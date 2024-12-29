@@ -21,7 +21,7 @@ class AbsenProvider extends GetConnect {
     final formData = FormData({
       'image': MultipartFile(file, filename: file.path.split('/').last),
       'status': '${fields['status']}',
-      'users_id': '${SpUtil.getInt('id')}',
+      'users_id': '${SpUtil.getInt('id')}', 
     });
 
     return post(

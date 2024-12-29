@@ -27,8 +27,8 @@ class MainMenuView extends GetView<MainMenuController> {
               children: [
                 const HomepageView(),
                 const TodolistView(),
-                const AbsenView(),
-                HistoryView(),
+                AbsenView(),
+                const HistoryView(),
                 const ProfileView(),
               ],
             );

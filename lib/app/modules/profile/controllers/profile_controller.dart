@@ -1,15 +1,18 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:puu1/app/data/absen_provider.dart';
 import 'package:puu1/app/data/user_provider.dart';
 import 'package:puu1/app/routes/app_pages.dart';
+import 'package:sp_util/sp_util.dart';
 
 class ProfileController extends GetxController {
   XFile? imageFile;
@@ -26,6 +29,23 @@ class ProfileController extends GetxController {
   RxInt sakit = 0.obs;
   RxInt izin = 0.obs;
   RxInt terlambat = 0.obs;
+
+  TextEditingController oldPassword = TextEditingController();
+  TextEditingController newPassword = TextEditingController();
+  TextEditingController confirmPassword = TextEditingController();
+  RxBool hidePass = false.obs;
+  RxBool hidePass1 = false.obs;
+  RxBool hidePass2 = false.obs;
+
+  RefreshController refreshController =
+      RefreshController(initialRefresh: false);
+
+  void onRefresh() async {
+    myData();
+    getStats();
+    // if failed,use refreshFailed()
+    refreshController.refreshCompleted();
+  }
 
   Widget itemProfile(String title, String subtitle, Widget iconData) {
     return Container(
@@ -54,6 +74,12 @@ class ProfileController extends GetxController {
   void onInit() {
     myData();
     getStats();
+    showPass();
+    hidePass.value = true;
+    showPass1();
+    hidePass1.value = true;
+    showPass2();
+    hidePass2.value = true;
     super.onInit();
   }
 
@@ -70,13 +96,12 @@ class ProfileController extends GetxController {
       jenisKelamin.value = data['jk'];
       print(data['email']);
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal memuat data absensi: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      // Get.snackbar(
+      //   'Error',
+      //   'Gagal memuat data absensi: $e',
+      //   backgroundColor: Colors.red,
+      //   colorText: Colors.white,
+      // );
     }
   }
 
@@ -109,7 +134,7 @@ class ProfileController extends GetxController {
     String nis,
     String jk,
   ) async {
-    EasyLoading.show(status: 'Mengirim...');
+    EasyLoading.show(status: 'Mengubah...');
 
     try {
       var data = {
@@ -119,17 +144,13 @@ class ProfileController extends GetxController {
       };
       print(data);
       final response = await UserProvider().updateUser(data);
+      EasyLoading.dismiss();
       if (response.statusCode == 200) {
-        EasyLoading.dismiss();
         Get.snackbar(
           'Success',
           'Data berhasil diubah',
           backgroundColor: Colors.green,
           colorText: Colors.white,
-        );
-        Get.offAllNamed(
-          Routes.MAIN_MENU,
-          arguments: {'tabIndex': 3},
         );
       }
     } catch (e) {
@@ -211,6 +232,84 @@ class ProfileController extends GetxController {
     }
   }
 
+  Future<void> changePassword() async {
+    String passLama = oldPassword.text;
+    String passBaru = newPassword.text;
+    String passKonfirmasi = confirmPassword.text;
+    EasyLoading.show(status: 'Mengirim...');
+    if (passLama == passBaru) {
+      EasyLoading.dismiss();
+      Get.snackbar(
+        'Peringatan',
+        'Password baru sama dengan password lama!',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    } else if (passBaru != passKonfirmasi) {
+      EasyLoading.dismiss();
+      Get.snackbar(
+        'Peringatan',
+        'Password baru dan konfirmasi password tidak sama!',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    } else {
+      try {
+        var data = {
+          'currPassword': passLama,
+          'password': passBaru,
+        };
+        final response = await UserProvider().changePassword(data);
+        if (response.statusCode == 200) {
+          EasyLoading.dismiss();
+          Get.snackbar(
+            'Success',
+            'Password berhasil diubah, silakan Login Kembali',
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+          );
+          Future.delayed(const Duration(seconds: 2), () {
+            SpUtil.clear();
+            Get.offAllNamed(Routes.LOGIN);
+          });
+        } else if (response.statusCode == 403) {
+          EasyLoading.dismiss();
+          Get.snackbar(
+            'Error',
+            'Password lama anda salah, silakan ulangi',
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+        }
+      } catch (e) {
+        EasyLoading.dismiss();
+        Get.snackbar(
+          'Error',
+          'Gagal mengirim data: $e',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    }
+  }
+
+  void showPass() {
+    hidePass.value = !hidePass.value;
+    print("hidePass: ${hidePass.value}");
+  }
+
+  void showPass1() {
+    hidePass1.value = !hidePass1.value;
+    print("hidePass: ${hidePass.value}");
+  }
+
+  void showPass2() {
+    hidePass2.value = !hidePass2.value;
+    print("hidePass: ${hidePass.value}");
+  }
+
   Future<void> getStats() async {
     try {
       var response = await AbsenProvider().getStats();
@@ -222,12 +321,12 @@ class ProfileController extends GetxController {
       terlambat.value = data['terlambat'];
       print(data);
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal memuat data statistik: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      // Get.snackbar(
+      //   'Error',
+      //   'Gagal memuat data statistik: $e',
+      //   backgroundColor: Colors.red,
+      //   colorText: Colors.white,
+      // );
     }
   }
 }

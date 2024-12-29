@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -149,24 +150,38 @@ class _TambahTaskViewState extends State<TambahTaskView> {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
-              Center(
+              const SizedBox(height: 10),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 80, vertical: 5),
                 child: ElevatedButton(
+                  
                   onPressed: () {
                     controller.addTask();
                   },
                   style: ElevatedButton.styleFrom(
+                    
                     backgroundColor: primary,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 32, vertical: 12),
                   ),
-                  child: Text(
-                    'Tambah',
-                    style: GoogleFonts.sora(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        CupertinoIcons.add_circled_solid,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(
+                        width: 12,
+                      ),
+                      Text(
+                        'Tambah',
+                        style: GoogleFonts.sora(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

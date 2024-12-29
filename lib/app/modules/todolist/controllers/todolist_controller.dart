@@ -1,27 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:puu1/app/data/user_provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:puu1/app/data/task_provider.dart';
 import 'package:puu1/app/routes/app_pages.dart';
 import 'package:sp_util/sp_util.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class TodolistController extends GetxController {
   final RxBool customeIcon = false.obs;
   RxList listData = <dynamic>[].obs;
+  RxList listData1 = <dynamic>[].obs;
+  DateTime today = DateTime.now();
+  RxList kalenderList = <dynamic>[].obs;
+  RxBool past = false.obs;
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
   DateTime? selectedDate;
 
+  RefreshController refreshController =
+      RefreshController(initialRefresh: false);
+
+  void onRefresh() async {
+    await getTask();
+    // if failed,use refreshFailed()
+    refreshController.refreshCompleted();
+  }
+
+  void updateSelectedDate(DateTime newDate) {
+    selectedDate = newDate;
+    compareDate();
+  }
+
+
   @override
-  void onInit() {
-    getTask();
+  void onInit() async {
+    await getTask();
+    kalenderList.value = listData;
+    await compareDate();
     super.onInit();
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    contentController.dispose();
+    refreshController.dispose();
+    super.dispose();
+  }
+
+  Future<void> compareDate() async {
+    if (selectedDate == null) {
+      print("Tidak ada tanggal yang dipilih");
+      past.value = false;
+    } else {
+      if (selectedDate!.isBefore(today)) {
+        past.value = true;
+        print("tanggal yang dipilih telah lewat");
+      } else if (selectedDate!.isAfter(today)) {
+        past.value = false;
+      } else {
+        past.value = true;
+        print("tanggal yang dipilih hari ini");
+      }
+    }
   }
 
   Future<void> getTask() async {
     try {
-      var response = await UserProvider().getTask();
+      var response = await TaskProvider().getTask();
       var responseBody = response.body;
       var data = responseBody['data'];
 
@@ -34,12 +82,12 @@ class TodolistController extends GetxController {
         };
       }));
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal memuat data task: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      // Get.snackbar(
+      //   'Peringatan',
+      //   'Gagal memuat data task: $e',
+      //   backgroundColor: Colors.red,
+      //   colorText: Colors.white,
+      // );
     }
   }
 
@@ -49,9 +97,15 @@ class TodolistController extends GetxController {
     String deadline = selectedDate.toString();
 
     if (judul.isEmpty || isi.isEmpty) {
-      Get.snackbar("Error", "Judul atau Isi tidak boleh kosong",
+      Get.snackbar("Peringatan", "Judul atau Isi tidak boleh kosong",
           backgroundColor: Colors.red, colorText: Colors.white);
-    } else {
+      return;
+    }
+    if (past.value == true) {
+      EasyLoading.dismiss();
+      Get.snackbar("Peringatan", "Pilih tenggat setelah hari ini",
+          backgroundColor: Colors.red, colorText: Colors.white);
+    } else if (past.value == false) {
       EasyLoading.show();
       var data = {
         "judul": judul,
@@ -59,7 +113,7 @@ class TodolistController extends GetxController {
         "deadline": deadline,
         "users_id": '${SpUtil.getInt('id')}',
       };
-      UserProvider().addTask(data).then((value) {
+      TaskProvider().addTask(data).then((value) {
         if (value.statusCode == 200) {
           Get.snackbar("Success", "Task Berhasil ditambahkan",
               backgroundColor: Colors.green, colorText: Colors.white);
@@ -68,7 +122,7 @@ class TodolistController extends GetxController {
           getTask();
           Get.offAllNamed(Routes.MAIN_MENU);
         } else {
-          Get.snackbar("Error", "Task Gagal ditambahkan",
+          Get.snackbar("Peringatan", "Task Gagal ditambahkan",
               backgroundColor: Colors.red, colorText: Colors.white);
         }
         EasyLoading.dismiss();
@@ -80,7 +134,7 @@ class TodolistController extends GetxController {
     EasyLoading.show();
 
     try {
-      var response = await UserProvider().deleteTask(id);
+      var response = await TaskProvider().deleteTask(id);
       // var responseBody = response.body;
 
       if (response.statusCode == 200) {
@@ -88,14 +142,14 @@ class TodolistController extends GetxController {
             backgroundColor: Colors.green, colorText: Colors.white);
         getTask();
       } else {
-        Get.snackbar("Error", "Task Gagal dihapus",
+        Get.snackbar("Peringatan", "Task Gagal dihapus",
             backgroundColor: Colors.red, colorText: Colors.white);
       }
       EasyLoading.dismiss();
     } catch (e) {
       EasyLoading.dismiss();
       Get.snackbar(
-        'Error',
+        'Peringatan',
         'Gagal menghapus task: $e',
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -103,7 +157,22 @@ class TodolistController extends GetxController {
     }
   }
 
-  // void onDaySelect(DateTime day, DateTime focusedDay) {
+  void onDaySelected(DateTime day, DateTime focusedDay) {
+    if (isSameDay(today, day)) {
+      today = DateTime.now();
+      kalenderList.value = listData;
+    } else {
+      today = day;
+      String hari = today.toString().split(" ")[0]; // Format tanggal
+      RxList results = <dynamic>[].obs;
 
-  // }
+      results.value = listData.where((element) {
+        return element['deadline']
+            .toString()
+            .startsWith(hari); // Cocokkan tanggal
+      }).toList();
+
+      kalenderList.value = results; // Perbarui daftar yang ditampilkan
+    }
+  }
 }

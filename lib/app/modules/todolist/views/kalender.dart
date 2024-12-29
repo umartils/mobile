@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:puu1/app/modules/todolist/controllers/todolist_controller.dart';
 import 'package:puu1/global.dart';
@@ -12,12 +13,7 @@ class Kalender extends StatefulWidget {
 }
 
 class _KalenderState extends State<Kalender> {
-  DateTime today = DateTime.now();
-  void _onDaySelected(DateTime day, DateTime focusedDay) {
-    setState(() {
-      today = day;
-    });
-  }
+  final TodolistController controller = Get.put(TodolistController());
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +26,7 @@ class _KalenderState extends State<Kalender> {
         padding: const EdgeInsets.all(5.0),
         child: Column(
           children: [
-            Text(
-              "Selected" + today.toString().split(" ")[0],
-              style: GoogleFonts.sora(color: Colors.white),
-            ),
-            const SizedBox(height: 10),
+            
             TableCalendar(
               daysOfWeekStyle: DaysOfWeekStyle(
                   weekdayStyle:
@@ -58,21 +50,25 @@ class _KalenderState extends State<Kalender> {
                 titleCentered: true,
                 titleTextStyle:
                     GoogleFonts.sora(color: Colors.white, fontSize: 16),
-                leftChevronIcon: Icon(
+                leftChevronIcon: const Icon(
                   Icons.chevron_left,
                   color: Colors.white, // Warna ikon panah kiri
                 ),
-                rightChevronIcon: Icon(
+                rightChevronIcon: const Icon(
                   Icons.chevron_right,
                   color: Colors.white, // Warna ikon panah kanan
                 ),
               ),
-              selectedDayPredicate: (day) => isSameDay(day, today),
-              focusedDay: today,
+              selectedDayPredicate: (day) => isSameDay(day, controller.today),
+              focusedDay: controller.today,
               availableGestures: AvailableGestures.all,
               firstDay: DateTime.utc(2010, 10, 16),
               lastDay: DateTime.utc(2030, 10, 16),
-              onDaySelected: _onDaySelected,
+              onDaySelected: (selectedDay, focusedDay) {
+                setState(() {
+                  controller.onDaySelected(selectedDay, focusedDay);
+                });
+              },
             ),
           ],
         ),

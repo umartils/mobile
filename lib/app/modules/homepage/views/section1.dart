@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:puu1/app/modules/todolist/controllers/todolist_controller.dart';
+import 'package:puu1/app/modules/homepage/controllers/homepage_controller.dart';
 import 'package:puu1/app/routes/app_pages.dart';
 import 'package:puu1/global.dart';
 
@@ -14,7 +14,7 @@ class SectionSatu extends StatefulWidget {
 }
 
 class _SectionSatuState extends State<SectionSatu> {
-  final TodolistController controller = Get.put(TodolistController());
+  final HomepageController controller = Get.put(HomepageController());
 
   @override
   Widget build(BuildContext context) {
@@ -67,20 +67,24 @@ class _SectionSatuState extends State<SectionSatu> {
           Obx(
             () => controller.listData.isEmpty
                 ? const Center(
+                    child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15),
                     child: Text(
-                        "No tasks available or failed to connect to the server")) // Tampilkan jika kosong
+                        "No tasks available or failed to connect to the server"),
+                  )) // Tampilkan jika kosong
                 : ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount:
-                        controller.listData.length, // Sesuaikan jumlah data
+                        2, // Sesuaikan jumlah data
                     itemBuilder: (context, index) {
                       var list =
                           controller.listData[index]; // Akses langsung elemen
                       return GestureDetector(
                         onTap: () {
-                          Get.toNamed(Routes.TODOLIST,
-                              arguments: list); // Navigasi
+                          Get.offAllNamed(
+                            Routes.TODOLIST,
+                          ); // Navigasi
                         },
                         child: Container(
                           margin: const EdgeInsets.only(

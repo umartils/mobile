@@ -3,7 +3,9 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:puu1/app/data/absen_provider.dart';
+import 'package:puu1/app/data/task_provider.dart';
 import 'package:puu1/app/data/user_provider.dart';
 import 'package:sp_util/sp_util.dart';
 
@@ -13,6 +15,7 @@ class HomepageController extends GetxController {
   RxString namaWaktu = ''.obs;
   RxString waktuMasuk = ''.obs;
   RxString waktuKeluar = ''.obs;
+  RxList listData = <dynamic>[].obs;
   var userImageUrl = '${SpUtil.getString("image")}'.obs;
   RxInt hadir = 0.obs;
   RxInt sakit = 0.obs;
@@ -20,13 +23,27 @@ class HomepageController extends GetxController {
   RxInt terlambat = 0.obs;
   RxInt kehadiran = 0.obs;
   RxInt tidakHadir = 0.obs;
+  RxString userLokasi = ''.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
+  RefreshController refreshingController =
+      RefreshController(initialRefresh: false);
+
+  void onRefresh() async {
     getTime();
     myData();
     getStats();
+    // if failed,use refreshFailed()
+    refreshingController.refreshCompleted();
+  }
+
+  @override
+  void onInit() async {
+    await getTime();
+    await myData();
+    await getStats();
+    await getTask1();
+    await getLocation();
+    super.onInit();
   }
 
   Future<void> myData() async {
@@ -40,6 +57,23 @@ class HomepageController extends GetxController {
       Get.snackbar(
         'Error',
         'Gagal memuat data user: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  Future<void> getLocation() async {
+    try {
+      var response = await UserProvider().getLocation();
+      var responseBody = response.body;
+      var time = responseBody['data'];
+      userLokasi.value = time['lokasi'];
+      print('Lokasi user : ${userLokasi.value}');
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal memuat data lokasi: $e',
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
@@ -85,6 +119,30 @@ class HomepageController extends GetxController {
       Get.snackbar(
         'Error',
         'Gagal memuat data statistik: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  Future<void> getTask1() async {
+    try {
+      var response = await TaskProvider().getTask();
+      var responseBody = response.body;
+      var data = responseBody['data'];
+
+      listData.value = List<dynamic>.from(data.map((element) {
+        return {
+          'id': element['id'],
+          'judul': element['judul'],
+          'isi': element['isi'],
+          'deadline': element['deadline'],
+        };
+      }));
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal memuat data task: $e',
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );

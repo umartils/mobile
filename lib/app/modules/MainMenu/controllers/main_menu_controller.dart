@@ -5,17 +5,21 @@ import 'package:get/get.dart';
 class MainMenuController extends GetxController {
   var tabIndex = 0.obs;
 
-  void changeTabIndex(int index) {
+  Future<void> changeTabIndex(int index) async {
     tabIndex.value = index;
+    print("tabIndex: ${tabIndex.value}");
   }
 
   @override
   void onInit() async {
-    final initialTabIndex = Get.arguments?['selectedIndex'] ?? 0;
-    tabIndex.value = initialTabIndex;
-    // getLokasi();
     super.onInit();
+    print("Get.arguments: ${Get.arguments}"); // Debug log
+    var initialTabIndex = Get.arguments?['selectedIndex'] ?? 0;
+    tabIndex.value = initialTabIndex;
+    print("initialTabIndex: $initialTabIndex");
+    print("tabIndex: ${tabIndex.value}");
   }
+
 
   Future<Position> getLokasi() async {
     bool servicesEnabled = await Geolocator.isLocationServiceEnabled();

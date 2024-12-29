@@ -7,17 +7,25 @@ import 'package:puu1/global.dart';
 
 Future<void> showWaktuDialog(
     BuildContext context, HomepageController controller) async {
-  // Controller untuk field input
-
   await showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text("Detail Waktu", style: TextStyle(fontSize: 20)),
+        title: Row(
+          children: [
+            Icon(Icons.info_rounded),
+            SizedBox(width: 8), // Jarak antara ikon dan teks
+            Text("Ajukan Perubahan", style: GoogleFonts.sora(fontSize: 20)),
+          ],
+        ),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [],
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+              )
+            ],
           ),
         ),
         actions: [

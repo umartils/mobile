@@ -40,37 +40,76 @@ class _SectionDua extends State<SectionDua> {
             ),
             child: Obx(
               () => Padding(
-                padding: const EdgeInsets.only(left: 12.0, top: 15.0),
+                padding: const EdgeInsets.only(top: 10.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      "Masuk",
-                      style: GoogleFonts.sora(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.info_rounded,
+                          color: Colors.white,
+                          size: 22,
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          "Summary",
+                          style: GoogleFonts.sora(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
-                    Text("${controller.waktuMasuk.value}",
-                        style: GoogleFonts.sora(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white)),
                     const SizedBox(
-                      height: 25,
+                      height: 15,
                     ),
-                    Text(
-                      "Keluar",
-                      style: GoogleFonts.sora(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Column(
+                          children: [
+                            Text(
+                              "Masuk",
+                              style: GoogleFonts.sora(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              '${controller.waktuMasuk.value}',
+                              style: GoogleFonts.sora(
+                                  color: Colors.white, fontSize: 11),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              "Lokasi",
+                              style: GoogleFonts.sora(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              '${controller.userLokasi.value}',
+                              style: GoogleFonts.sora(
+                                  color: Colors.white, fontSize: 11),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    Text("${controller.waktuKeluar.value}",
-                        style: GoogleFonts.sora(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white)),
                   ],
                 ),
               ),
@@ -96,16 +135,28 @@ class _SectionDua extends State<SectionDua> {
             padding: const EdgeInsets.all(10.0),
             child: Obx(
               () => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Judul "Riwayat"
-                  Text(
-                    "Riwayat",
-                    style: GoogleFonts.sora(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: primary,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.history,
+                        color: primary,
+                        size: 22,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        "Riwayat",
+                        style: GoogleFonts.sora(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: primary,
+                        ),
+                      ),
+                    ],
                   ),
                   SizedBox(height: 10),
                   // Item "Hadir"

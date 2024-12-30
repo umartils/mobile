@@ -49,7 +49,7 @@ class ProfileController extends GetxController {
 
   Widget itemProfile(String title, String subtitle, Widget iconData) {
     return Container(
-      width: 350,
+      // width: 350,
       padding: const EdgeInsets.only(right: 10, left: 10),
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -123,7 +123,11 @@ class ProfileController extends GetxController {
           borderRadius: BorderRadiusDirectional.circular(50),
         ),
         child: Center(
-          child: Text(title, style: GoogleFonts.sora(fontSize: 12)),
+          child: Text(title,
+              style: GoogleFonts.sora(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black)),
         ),
       )
     ]);

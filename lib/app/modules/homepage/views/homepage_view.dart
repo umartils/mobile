@@ -27,6 +27,7 @@ class _HomepageViewState extends State<HomepageView> {
     final formattedDate = DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(now);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Container(
           padding: const EdgeInsets.only(
@@ -59,14 +60,60 @@ class _HomepageViewState extends State<HomepageView> {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(top: 7, right: 20),
+            padding: const EdgeInsets.only(top: 9, right: 20),
             child: Obx(() {
               if (controller.imageUrl.value.isNotEmpty) {
                 return GestureDetector(
                   onTap: () {
-                    // Aksi logout
-                    SpUtil.clear(); // Membersihkan data user
-                    Get.offAllNamed(Routes.LOGIN); // Navigasi ke halaman login
+                    // Menampilkan dropdown menu
+                    showMenu(
+                      context: context,
+                      position: const RelativeRect.fromLTRB(200, 80, 10, 0),
+                      items: [
+                        const PopupMenuItem(
+                          child: Text("Profile"),
+                          value: "profile",
+                        ),
+                        PopupMenuItem(
+                          child: Text("Logout"),
+                          value: "logout",
+                        ),
+                      ],
+                    ).then((value) {
+                      if (value == "profile") {
+                        // Navigasi ke halaman profil
+                        Get.toNamed(Routes.PROFILE);
+                      } else if (value == "logout") {
+                        // Menampilkan dialog konfirmasi logout
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text("Logout"),
+                              content: Text("Apakah Anda yakin ingin logout?"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    // Tutup dialog
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text("Tidak"),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    // Proses logout
+                                    SpUtil.clear(); // Membersihkan data user
+                                    Get.offAllNamed(Routes
+                                        .LOGIN); // Navigasi ke halaman login
+                                  },
+                                  child: Text("Ya"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    });
                   },
                   child: Stack(alignment: Alignment.center, children: [
                     Container(
@@ -102,79 +149,81 @@ class _HomepageViewState extends State<HomepageView> {
         controller: controller.refreshingController,
         onRefresh: controller.onRefresh,
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 34,
-              ),
-              Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  height: 34,
+                ),
+                Center(
                   child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 320,
-                    height: 140,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(20)),
-                      image: const DecorationImage(
-                          image: AssetImage("asset/images/image.png"),
-                          fit: BoxFit.cover),
-                      boxShadow: [
-                        BoxShadow(
-                          offset: const Offset(0, 2),
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 2,
-                          blurRadius: 10,
-                        )
-                      ],
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () => Get.toNamed(Routes.TAMBAH_TASK),
-                    child: Container(
-                      width: 160,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 5.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                            color: primary, width: 2.0), // Tambahkan border
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10)),
-                        boxShadow: [
-                          BoxShadow(
-                            offset: const Offset(0, 4),
-                            color: Colors.black.withOpacity(0.3),
-                            spreadRadius: 1,
-                            blurRadius: 6,
+                    alignment: Alignment.center,
+                    children: [
+                      // Background container with image
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        height: 160,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(20)),
+                          image: const DecorationImage(
+                            image: AssetImage("asset/images/image.png"),
+                            fit: BoxFit.cover,
                           ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Text(
-                          "Buat Daftar Tugasmu",
-                          style: GoogleFonts.sora(
-                            color: primary,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          textAlign: TextAlign.center,
+                          boxShadow: [
+                            BoxShadow(
+                              offset: const Offset(0, 2),
+                              color: Colors.black.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 10,
+                            ),
+                          ],
                         ),
                       ),
-                    ),
+                      InkWell(
+                        onTap: () => Get.toNamed(Routes.TAMBAH_TASK),
+                        child: Container(
+                          width: 160,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 5.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                                color: primary,
+                                width: 2.0), // Border with primary color
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(10)),
+                            boxShadow: [
+                              BoxShadow(
+                                offset: const Offset(0, 4),
+                                color: Colors.black.withOpacity(0.3),
+                                spreadRadius: 1,
+                                blurRadius: 6,
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Buat Daftar Tugasmu",
+                              style: GoogleFonts.sora(
+                                color: primary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-
-                ],
-              )
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0), // Jarak ke kiri
-                child: Text(
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                Text(
                   "Untuk Anda",
                   style: GoogleFonts.sora(
                     color: secondchoice,
@@ -182,13 +231,11 @@ class _HomepageViewState extends State<HomepageView> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.only(right: 20.0, left: 13.0, bottom: 20),
+                const SizedBox(
+                  height: 20,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 20),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -199,9 +246,9 @@ class _HomepageViewState extends State<HomepageView> {
                       SectionDua()
                     ],
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),

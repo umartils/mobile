@@ -32,6 +32,7 @@ class _OnboardingState extends State<Onboarding> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
+          // const Spacer(),
           Expanded(
             child: PageView.builder(
               controller: _controller,
@@ -65,7 +66,7 @@ class _OnboardingState extends State<Onboarding> {
                           color: const Color(0xff144795),
                         ),
                       ),
-                      const SizedBox(height: 100),
+                      const SizedBox(height: 30),
                       Image.asset(
                         contents[i].image,
                         height: 300,

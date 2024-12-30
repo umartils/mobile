@@ -25,6 +25,7 @@ class _HistoryViewState extends State<HistoryView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Monitoring',
@@ -44,7 +45,7 @@ class _HistoryViewState extends State<HistoryView> {
                   hintText: 'Cari berdasarkan tanggal...',
                   prefixIcon: Icon(Icons.search),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),  
+                    borderRadius: BorderRadius.circular(20),
                     borderSide: const BorderSide(color: Colors.black12),
                   ),
                   filled: true,

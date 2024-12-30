@@ -20,7 +20,6 @@ class MainMenuController extends GetxController {
     print("tabIndex: ${tabIndex.value}");
   }
 
-
   Future<Position> getLokasi() async {
     bool servicesEnabled = await Geolocator.isLocationServiceEnabled();
     if (!servicesEnabled) {

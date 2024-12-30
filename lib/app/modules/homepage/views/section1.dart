@@ -19,7 +19,7 @@ class _SectionSatuState extends State<SectionSatu> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 320,
+      // width: 320,
       height: 240,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -71,15 +71,13 @@ class _SectionSatuState extends State<SectionSatu> {
                     padding: EdgeInsets.symmetric(horizontal: 15),
                     child: Text(
                         "No tasks available or failed to connect to the server"),
-                  )) // Tampilkan jika kosong
+                  ))
                 : ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount:
-                        2, // Sesuaikan jumlah data
+                    itemCount: 2,
                     itemBuilder: (context, index) {
-                      var list =
-                          controller.listData[index]; // Akses langsung elemen
+                      var list = controller.listData[index];
                       return GestureDetector(
                         onTap: () {
                           Get.offAllNamed(

@@ -5,11 +5,11 @@ flutter_native_splash:
 
   # color: "#ffffff"
   background_image: "asset/logo/bg-andro.png"
-  image: "asset/logo/600.png"
+  image: "asset/logo/Splash.png"
   branding: "asset/logo/ios_brand.png"
 
   android_12:
     color: "#ffffff"
     background_image: "asset/logo/bg-andro.png"
-    image: "asset/logo/andro_12.png"
+    image: "asset/logo/Splash.png"
     branding: "asset/logo/brand.png"

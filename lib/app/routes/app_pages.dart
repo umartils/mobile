@@ -1,4 +1,7 @@
 import 'package:get/get.dart';
+import 'package:puu1/app/modules/onbording/bindings/onboarding_binding.dart';
+import 'package:puu1/app/modules/onbording/views/Onbording.dart';
+import 'package:puu1/app/modules/onbording/views/onboardingbackup.dart';
 
 import '../modules/MainMenu/bindings/main_menu_binding.dart';
 import '../modules/MainMenu/views/main_menu_view.dart';
@@ -37,6 +40,11 @@ class AppPages {
   static const INITIAL = Routes.HOME;
 
   static final routes = [
+    GetPage(
+      name: _Paths.ONBOARDING,
+      page: () => Onboarding(),
+      binding: OnboardingBinding(),
+    ),
     GetPage(
       name: _Paths.HOME,
       page: () => const HomeView(),
@@ -106,7 +114,6 @@ class AppPages {
       name: _Paths.TAMBAH_TASK,
       page: () => const TambahTaskView(),
       binding: TambahTaskBinding(),
-      
     ),
   ];
 }

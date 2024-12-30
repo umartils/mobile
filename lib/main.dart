@@ -3,61 +3,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:puu1/app/modules/onbording/views/Onbording.dart';
 import 'package:sp_util/sp_util.dart';
 import 'app/routes/app_pages.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-// import 'package:geolocator/geolocator.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
-
   print("Handling a background message: ${message.messageId}");
 }
 
-/// Determine the current position of the device.
-///
-/// When the location services are not enabled or permissions
-/// are denied the `Future` will return an error.
-// Future<Position> _getCurrentLocation() async {
-//   bool servicesEnabled = await Geolocator.isLocationServiceEnabled();
-//   if (!servicesEnabled) {
-//     return Future.error("Lokasi tidak ditemukan.");
-//   }
-
-//   LocationPermission permission = await Geolocator.checkPermission();
-//   if (permission == LocationPermission.denied) {
-//     permission = await Geolocator.requestPermission();
-//     if (permission == LocationPermission.denied) {
-//       return Future.error("Permintaan lokasi dibatalkan.");
-//     }
-//   }
-
-//   if (permission == LocationPermission.deniedForever) {
-//     return Future.error("Lokasi tidak diperbolehkan.");
-//   }
-
-//   return await Geolocator.getCurrentPosition();
-// }
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  initializeDateFormatting('de_DE', null);
-  await SpUtil.getInstance();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  initializeDateFormatting('de_DE', null); // Set format lokal
+  await SpUtil.getInstance(); // Inisialisasi shared preferences
+  await Firebase.initializeApp(
+      options:
+          DefaultFirebaseOptions.currentPlatform); // Firebase initialization
+
+  // Handle Firebase Messaging permissions and notifications
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   NotificationSettings settings = await messaging.requestPermission(
     alert: true,
-    announcement: false,
     badge: true,
-    carPlay: false,
-    criticalAlert: false,
-    provisional: false,
     sound: true,
   );
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     if (message.notification != null) {
@@ -77,15 +50,31 @@ void main() async {
   });
 
   print('User granted permission: ${settings.authorizationStatus}');
+
+  // Menunggu hasil dari _getInitialRoute() sebelum menjalankan aplikasi
+  String initialRoute = await _getInitialRoute(); // Menunggu hasilnya
+
   runApp(
     GetMaterialApp(
       title: "Application",
-      initialRoute: (SpUtil.getBool('isLogin', defValue: false)!
-          ? Routes.MAIN_MENU
-          : Routes.HOME),
+      initialRoute: initialRoute, // Menggunakan hasil _getInitialRoute()
       getPages: AppPages.routes,
       builder: EasyLoading.init(),
       debugShowCheckedModeBanner: false,
     ),
   );
+}
+
+// Perbaiki logika _getInitialRoute menjadi async
+Future<String> _getInitialRoute() async {
+  bool isFirstInstall = SpUtil.getBool('isFirstInstall', defValue: true)!;
+
+  if (isFirstInstall) {
+    await SpUtil.putBool('isFirstInstall', false);
+    return Routes.ONBOARDING;
+  }
+
+  // Jika sudah pernah install, cek status login
+  bool isLoggedIn = SpUtil.getBool('isLogin', defValue: false)!;
+  return isLoggedIn ? Routes.MAIN_MENU : Routes.LOGIN;
 }

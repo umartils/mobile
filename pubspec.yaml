@@ -39,6 +39,7 @@ flutter:
     - asset/images/
     - asset/icon/
     - asset/logo/
+    - asset/svg/
 
 flutter_icons:
   android: true

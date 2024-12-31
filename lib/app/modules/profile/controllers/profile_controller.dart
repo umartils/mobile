@@ -53,7 +53,7 @@ class ProfileController extends GetxController {
       padding: const EdgeInsets.only(right: 10, left: 10),
       decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
+        // borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       child: ListTile(
         title: Text(

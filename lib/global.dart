@@ -6,5 +6,4 @@ const Color secondchoice = Color(0XFF0D3064);
 var myHeader = {
   'Accept': 'application/json',
 };
-// const String url = "http://192.168.94.131:8000";
-const String url = "http://192.168.1.2:8000";
+const String url = "http://10.10.22.87:8000";

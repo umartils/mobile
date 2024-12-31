@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,6 +10,7 @@ import 'package:puu1/app/modules/homepage/views/section2.dart';
 import 'package:puu1/app/routes/app_pages.dart';
 import 'package:puu1/global.dart';
 import 'package:sp_util/sp_util.dart';
+import '../controllers/content.dart';
 
 import '../controllers/homepage_controller.dart';
 
@@ -21,6 +24,34 @@ class HomepageView extends StatefulWidget {
 class _HomepageViewState extends State<HomepageView> {
   final HomepageController controller = Get.put(HomepageController());
 
+  int currentIndex = 0; // Index untuk mengontrol konten
+  late Timer _timer; // Timer untuk auto-slide
+
+  @override
+  void initState() {
+    super.initState();
+
+    _timer = Timer.periodic(const Duration(seconds: 8), (timer) {
+      setState(() {
+        currentIndex =
+            (currentIndex + 1) % taskContents.length; // Ganti konten (loop)
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  void changeContent() {
+    setState(() {
+      currentIndex = (currentIndex + 1) %
+          taskContents.length; // Ganti konten manual (loop)
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
@@ -30,10 +61,7 @@ class _HomepageViewState extends State<HomepageView> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Container(
-          padding: const EdgeInsets.only(
-            left: 3,
-            top: 10,
-          ),
+          padding: const EdgeInsets.only(left: 3, top: 10),
           child: Obx(
             () => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +93,6 @@ class _HomepageViewState extends State<HomepageView> {
               if (controller.imageUrl.value.isNotEmpty) {
                 return GestureDetector(
                   onTap: () {
-                    // Menampilkan dropdown menu
                     showMenu(
                       context: context,
                       position: const RelativeRect.fromLTRB(200, 80, 10, 0),
@@ -94,17 +121,14 @@ class _HomepageViewState extends State<HomepageView> {
                               actions: [
                                 TextButton(
                                   onPressed: () {
-                                    // Tutup dialog
                                     Navigator.of(context).pop();
                                   },
                                   child: Text("Tidak"),
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    // Proses logout
-                                    SpUtil.clear(); // Membersihkan data user
-                                    Get.offAllNamed(Routes
-                                        .LOGIN); // Navigasi ke halaman login
+                                    SpUtil.clear();
+                                    Get.offAllNamed(Routes.LOGIN);
                                   },
                                   child: Text("Ya"),
                                 ),
@@ -128,12 +152,11 @@ class _HomepageViewState extends State<HomepageView> {
                       ),
                     ),
                     CircleAvatar(
-                      radius: 22, // Sesuaikan ukuran avatar
+                      radius: 22,
                       backgroundImage:
                           NetworkImage("${controller.imageUrl.value}"),
                       onBackgroundImageError: (_, __) {
-                        // Jika URL gambar gagal dimuat, tampilkan placeholder
-                        print("Failed to load user image.");
+                        print("Failed to load user image."); // Debug
                       },
                     ),
                   ]),
@@ -161,38 +184,42 @@ class _HomepageViewState extends State<HomepageView> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Background container with image
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        height: 160,
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(20)),
-                          image: const DecorationImage(
-                            image: AssetImage("asset/images/image.png"),
-                            fit: BoxFit.cover,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              offset: const Offset(0, 2),
-                              color: Colors.black.withOpacity(0.2),
-                              spreadRadius: 2,
-                              blurRadius: 10,
+                      AnimatedSwitcher(
+                        duration: const Duration(seconds: 5),
+                        child: Container(
+                          key: ValueKey<int>(
+                              currentIndex), // Berubah setiap index berubah
+                          padding: const EdgeInsets.all(20),
+                          height: 160,
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20)),
+                            image: DecorationImage(
+                              image: AssetImage(
+                                  taskContents[currentIndex].imagePath),
+                              fit: BoxFit.cover,
                             ),
-                          ],
+                            boxShadow: [
+                              BoxShadow(
+                                offset: const Offset(0, 2),
+                                color: Colors.black.withOpacity(0.2),
+                                spreadRadius: 2,
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       InkWell(
-                        onTap: () => Get.toNamed(Routes.TAMBAH_TASK),
+                        onTap: taskContents[currentIndex]
+                            .onTap, // Gunakan aksi dari konten
                         child: Container(
                           width: 160,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10.0, vertical: 5.0),
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            border: Border.all(
-                                color: primary,
-                                width: 2.0), // Border with primary color
+                            border: Border.all(color: primary, width: 2.0),
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(10)),
                             boxShadow: [
@@ -206,7 +233,7 @@ class _HomepageViewState extends State<HomepageView> {
                           ),
                           child: Center(
                             child: Text(
-                              "Buat Daftar Tugasmu",
+                              taskContents[currentIndex].title,
                               style: GoogleFonts.sora(
                                 color: primary,
                                 fontSize: 12,

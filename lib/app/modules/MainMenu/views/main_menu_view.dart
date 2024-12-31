@@ -16,7 +16,6 @@ class MainMenuView extends GetView<MainMenuController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: SafeArea(
         child: Obx(() {
           if (controller.tabIndex.value == 2) {
@@ -57,7 +56,7 @@ class MainMenuView extends GetView<MainMenuController> {
             BottomNavigationBarItem(
               icon: _buildIconWithBorder(
                 activeIconPath: "asset/icon/home-active.svg",
-                inactiveIconPath: "asset/icon/home.svg", // Menggunakan SVG
+                inactiveIconPath: "asset/icon/home.svg",
                 isSelected: controller.tabIndex.value == 0,
               ),
               label: 'Home',
